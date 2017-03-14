@@ -1,11 +1,16 @@
 ﻿using System;
 using System.IO;
+using System.Security.Cryptography;
+using System.Text;
 
 public static class FileEncryptionAndDecryption
-{    
-    
-    public static void Encrypt(string inputFile,string outputFile,string password)
-    { 
+{
+
+    public static void Encrypt(string inputFile, string outputFile, string password)
+    {
+        string hashedPassword = GenerateHash(password);
+        Console.WriteLine("Hashed password = " + hashedPassword);
+
         FileStream fs = new FileStream(inputFile, FileMode.Open);
         BinaryReader br = new BinaryReader(fs);
 
@@ -26,7 +31,7 @@ public static class FileEncryptionAndDecryption
         {
             int offset = i - (formattedName.Length + 1);
             buffer[i] = CorrectEncryptByteValue(temp[offset] + 3);
-            buffer[i] = (byte)(buffer[i] ^ password[offset % password.Length]);            
+            buffer[i] = (byte)(buffer[i] ^ hashedPassword[offset % hashedPassword.Length]);
         }
         FileStream fr = new FileStream(outputFile, FileMode.Create);
         BinaryWriter wr = new BinaryWriter(fr);
@@ -39,8 +44,9 @@ public static class FileEncryptionAndDecryption
         br.Close();
         fs.Close();
     }
-    public static void Decrypt(string inputFile,string password)
+    public static void Decrypt(string inputFile, string password)
     {
+        string hashedPassword = GenerateHash(password);
         FileStream fs = new FileStream(inputFile, FileMode.Open);
         BinaryReader br = new BinaryReader(fs);
 
@@ -56,7 +62,7 @@ public static class FileEncryptionAndDecryption
         int j = 0;
         for (int i = nameSize + 1; i < buffer.Length; i++)
         {
-            data[j] = (byte)(buffer[i] ^ password[j % password.Length]);
+            data[j] = (byte)(buffer[i] ^ hashedPassword[j % hashedPassword.Length]);
             data[j] = CorrectDecryptByteValue(data[j] - 3);
             j++;
         }
@@ -90,5 +96,17 @@ public static class FileEncryptionAndDecryption
             value = 255 + (value + 1);
         }
         return (byte)value;
+    }
+    private static string GenerateHash(string password)
+    {
+        MD5 md5 = MD5.Create();
+        byte[] inputBytes = Encoding.ASCII.GetBytes(password);
+        byte[] hash = md5.ComputeHash(inputBytes);
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < hash.Length; i++)
+        {
+            sb.Append(hash[i].ToString("X2"));
+        }
+        return sb.ToString();
     }
 }
