@@ -14,20 +14,23 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using System.ComponentModel;
 
 namespace FileStorageEncryption
 {
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
+    
     public partial class MainWindow : Window
     {
+       
         string files = "";
         public MainWindow()
         {
-            InitializeComponent();
+            InitializeComponent();            
         }
-
+        
         private void Button_Click(object sender, RoutedEventArgs e)
         {
             OpenFileDialog ofd = new OpenFileDialog()
@@ -46,7 +49,7 @@ namespace FileStorageEncryption
         }
 
         private void EncryptButton_Click(object sender, RoutedEventArgs e)
-        {
+        {           
             FileEncryptionAndDecryption.Encrypt(files, "outputFile.kil",passwordTextBox.Text);
         }
 

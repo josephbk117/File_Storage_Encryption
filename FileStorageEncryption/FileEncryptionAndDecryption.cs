@@ -2,14 +2,22 @@
 using System.IO;
 using System.Security.Cryptography;
 using System.Text;
+using System.ComponentModel;
+using System.Threading.Tasks;
 
 public static class FileEncryptionAndDecryption
 {
 
-    public static void Encrypt(string inputFile, string outputFile, string password)
+    private static BackgroundWorker bgw = new BackgroundWorker();    
+        
+
+    private static void Bgw_DoWork(object sender, DoWorkEventArgs e)
     {
+        string[] vals = (string[])e.Argument;
+        string password = vals[2];
+        string inputFile = vals[0];
+        string outputFile = vals[1];
         string hashedPassword = GenerateHash(password);
-        Console.WriteLine("Hashed password = " + hashedPassword);
 
         FileStream fs = new FileStream(inputFile, FileMode.Open);
         BinaryReader br = new BinaryReader(fs);
@@ -26,13 +34,19 @@ public static class FileEncryptionAndDecryption
             buffer[i] = Convert.ToByte(formattedName[i - 1]);
         }
         //Buffer is filled with meta data now .. now add the data
-
-        for (int i = formattedName.Length + 1; i < buffer.Length; i++)
+        /*for (int i = formattedName.Length + 1; i < buffer.Length; i++)
         {
             int offset = i - (formattedName.Length + 1);
             buffer[i] = CorrectEncryptByteValue(temp[offset] + 3);
             buffer[i] = (byte)(buffer[i] ^ hashedPassword[offset % hashedPassword.Length]);
-        }
+        }*/
+
+        Parallel.For(formattedName.Length + 1, buffer.Length, i => {
+            int offset = i - (formattedName.Length + 1);
+            buffer[i] = CorrectEncryptByteValue(temp[offset] + 3);
+            buffer[i] = (byte)(buffer[i] ^ hashedPassword[offset % hashedPassword.Length]);
+        });
+        
         FileStream fr = new FileStream(outputFile, FileMode.Create);
         BinaryWriter wr = new BinaryWriter(fr);
 
@@ -44,6 +58,15 @@ public static class FileEncryptionAndDecryption
         br.Close();
         fs.Close();
     }
+        
+    public static void Encrypt(string inputFile, string outputFile, string password)
+    {
+        bgw.DoWork += Bgw_DoWork;
+        string[] vals = { inputFile, outputFile, password };
+        bgw.RunWorkerAsync(vals);
+    }
+
+   
     public static void Decrypt(string inputFile, string password)
     {
         string hashedPassword = GenerateHash(password);
@@ -60,6 +83,7 @@ public static class FileEncryptionAndDecryption
         }
         byte[] data = new byte[buffer.Length - nameSize];
         int j = 0;
+
         for (int i = nameSize + 1; i < buffer.Length; i++)
         {
             data[j] = (byte)(buffer[i] ^ hashedPassword[j % hashedPassword.Length]);
