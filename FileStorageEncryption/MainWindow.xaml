@@ -24,19 +24,11 @@
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="{x:Type TextBox}">
-                        <Border x:Name="border" CornerRadius="10" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" Background="{TemplateBinding Background}" SnapsToDevicePixels="True">
-                            <ScrollViewer x:Name="PART_ContentHost" Focusable="false" HorizontalScrollBarVisibility="Hidden" VerticalScrollBarVisibility="Hidden"/>
-                        </Border>
+                        <Border BorderBrush="Black" BorderThickness="1" HorizontalAlignment="Left" Height="30" VerticalAlignment="Top" Width="412"/>
                         <ControlTemplate.Triggers>
-                            <Trigger Property="IsEnabled" Value="false">
-                                <Setter Property="Opacity" TargetName="border" Value="0.56"/>
-                            </Trigger>
-                            <Trigger Property="IsMouseOver" Value="true">
-                                <Setter Property="BorderBrush" TargetName="border" Value="{StaticResource TextBox.MouseOver.Border}"/>
-                            </Trigger>
-                            <Trigger Property="IsKeyboardFocused" Value="true">
-                                <Setter Property="BorderBrush" TargetName="border" Value="{StaticResource TextBox.Focus.Border}"/>
-                            </Trigger>
+                            <Trigger Property="IsEnabled" Value="false"/>
+                            <Trigger Property="IsMouseOver" Value="true"/>
+                            <Trigger Property="IsKeyboardFocused" Value="true"/>
                         </ControlTemplate.Triggers>
                     </ControlTemplate>
                 </Setter.Value>
@@ -52,10 +44,10 @@
             </Style.Triggers>
         </Style>
     </Window.Resources>
-    <Grid>
+    <Grid x:Name="MainGrid">
         <Label Content="File Encrypter &amp; Decrypter" Margin="10,0" Height="46" RenderTransformOrigin="0.5,0.5" HorizontalContentAlignment="Center" FontSize="28" VerticalAlignment="Top"/>
         <Button x:Name="addFileButton" Content="Add Files" HorizontalAlignment="Right" Margin="0,70,10,0" VerticalAlignment="Top" Width="80" Height="30" FontSize="16" Click="Button_Click"/>
-        <TextBox x:Name="openFileTextBox" Height="30" Margin="10,70,95,0" TextWrapping="Wrap" VerticalAlignment="Top" FontSize="20" HorizontalContentAlignment="Center" Style="{DynamicResource RoundedTextBox}"/>
+        <TextBox x:Name="openFileTextBox" Height="30" Margin="10,70,95,0" TextWrapping="Wrap" VerticalAlignment="Top" FontSize="20" HorizontalContentAlignment="Center"/>
         <Button x:Name="encryptButton" Content="Encrypt" Margin="120,158,0,0" VerticalAlignment="Top" Height="37" FontSize="18" Click="EncryptButton_Click" HorizontalAlignment="Left" Width="110"/>
         <Button x:Name="decryptButton" Content="Decrypt" Margin="0,158,120,0" VerticalAlignment="Top" Height="37" FontSize="18" Click="DecryptButton_Click" HorizontalAlignment="Right" Width="112"/>
         <TextBox x:Name="passwordTextBox" Height="30" Margin="10,105,95,0" TextWrapping="Wrap" VerticalAlignment="Top" FontSize="20" HorizontalContentAlignment="Center" Text="password"/>

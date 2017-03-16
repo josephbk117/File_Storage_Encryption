@@ -24,38 +24,54 @@ namespace FileStorageEncryption
     
     public partial class MainWindow : Window
     {
-       
-        string files = "";
+
+        string[] files;
         public MainWindow()
         {
-            InitializeComponent();            
+            InitializeComponent();      
+
         }
         
         private void Button_Click(object sender, RoutedEventArgs e)
         {
             OpenFileDialog ofd = new OpenFileDialog()
             {
-                //Multiselect = true
+                Multiselect = true
             };
             if (ofd.ShowDialog() == true)
             {
-                /*foreach (string fileName in ofd.FileNames)
+                files = ofd.FileNames;
+                string names = "";
+                foreach (string fileName in ofd.FileNames)
                 {
-                    files += $"{fileName}, ";
-                }*/
-                files = ofd.FileName;
-                openFileTextBox.Text = ofd.FileName;
+                    names += $"{fileName}, ";
+                }                
+                openFileTextBox.Text = names;
             }
         }
 
         private void EncryptButton_Click(object sender, RoutedEventArgs e)
-        {           
-            FileEncryptionAndDecryption.Encrypt(files, "outputFile.kil",passwordTextBox.Text);
+        {
+            string fileFormatted = "";
+            for(int i=0;i<files.Length;i++)
+            {
+                string file = files[i];
+                if (i >= files.Length - 1)
+                {
+                    fileFormatted += file;
+                }
+                else
+                    fileFormatted += file + ",";
+            }
+            Console.WriteLine("Formated file = " + fileFormatted);
+            FileEncryptionAndDecryption.Encrypt(fileFormatted, "outputFile.kil",passwordTextBox.Text);
+            
         }
 
         private void DecryptButton_Click(object sender, RoutedEventArgs e)
         {
-            FileEncryptionAndDecryption.Decrypt(files,passwordTextBox.Text);
+            //Only one file is needed
+            FileEncryptionAndDecryption.Decrypt(files[0],passwordTextBox.Text);
         }        
         
     }
