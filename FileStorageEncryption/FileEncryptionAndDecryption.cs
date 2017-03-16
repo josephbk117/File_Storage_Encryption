@@ -143,13 +143,27 @@ public static class FileEncryptionAndDecryption
             {
                 _fileName += Convert.ToChar(buffer[i]);
             }
-            p = _fileSize + _fileNameLength + 1 + 4;
-            Console.WriteLine("Decrypted file name = " + _fileName);
-            Console.WriteLine("Total meta data size = " + (4+1+_fileName.Length) + ", Total data size = "+_fileSize);
-            
-            Console.WriteLine("p value = " + p);
+            byte[] _data = new byte[_fileSize];
+
+            int k = 0;
+            for (int i = p + _fileNameLength + 5; i < p + _fileSize+5; i++)
+            {
+                _data[k] = (byte)(buffer[i] ^ hashedPassword[k % hashedPassword.Length]);
+                _data[k] = CorrectDecryptByteValue(_data[k] - 3);
+                k++;
+            }
+
+            FileStream _fr = new FileStream(_fileName, FileMode.Create);
+            BinaryWriter _wr = new BinaryWriter(_fr);
+            _wr.Write(_data);
+
+            _wr.Close();
+            _fr.Close();
+
+            //Move to next index
+            p = p + _fileSize + _fileNameLength + 5;            
         }
-        byte[] sizeBytes = { buffer[0], buffer[1], buffer[2], buffer[3] };
+        /*byte[] sizeBytes = { buffer[0], buffer[1], buffer[2], buffer[3] };
 
         int fileSize = BitConverter.ToInt32(sizeBytes, 0);
         int nameSize = buffer[4];
@@ -176,7 +190,7 @@ public static class FileEncryptionAndDecryption
         wr.Write(data);
 
         wr.Close();
-        fr.Close();
+        fr.Close();*/
 
         br.Close();
         fs.Close();
