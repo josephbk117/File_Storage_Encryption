@@ -117,7 +117,7 @@ public static class FileEncryptionAndDecryption
         bgw.RunWorkerAsync(vals);
     }
 
-    public static void Decrypt(string inputFile, string password)
+    public static void Decrypt(string inputFile, string outputFolderPath,string password)
     {
         string hashedPassword = GenerateHash(password);
         FileStream fs = new FileStream(inputFile, FileMode.Open);
@@ -153,7 +153,7 @@ public static class FileEncryptionAndDecryption
                 k++;
             }
 
-            FileStream _fr = new FileStream(_fileName, FileMode.Create);
+            FileStream _fr = new FileStream(outputFolderPath+"/"+_fileName, FileMode.Create);
             BinaryWriter _wr = new BinaryWriter(_fr);
             _wr.Write(_data);
 
@@ -163,35 +163,7 @@ public static class FileEncryptionAndDecryption
             //Move to next index
             p = p + _fileSize + _fileNameLength + 5;            
         }
-        /*byte[] sizeBytes = { buffer[0], buffer[1], buffer[2], buffer[3] };
-
-        int fileSize = BitConverter.ToInt32(sizeBytes, 0);
-        int nameSize = buffer[4];
-        string fileName = "";
-
-        for (int i = 5; i < nameSize + 5; i++)
-        {
-            fileName += Convert.ToChar(buffer[i]);
-        }
         
-        byte[] data = new byte[fileSize];
-        Console.WriteLine("Total meta Data size = " + (fileName.Length + 4 + 1));
-        int j = 0;
-
-        for (int i = nameSize + 5; i < fileSize; i++)
-        {
-            data[j] = (byte)(buffer[i] ^ hashedPassword[j % hashedPassword.Length]);
-            data[j] = CorrectDecryptByteValue(data[j] - 3);
-            j++;
-        }
-
-        FileStream fr = new FileStream(fileName, FileMode.Create);
-        BinaryWriter wr = new BinaryWriter(fr);
-        wr.Write(data);
-
-        wr.Close();
-        fr.Close();*/
-
         br.Close();
         fs.Close();
     }

@@ -21,17 +21,18 @@ namespace FileStorageEncryption
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
-    
+
     public partial class MainWindow : Window
     {
 
         string[] files;
+        string outputFolderPath = "";
         public MainWindow()
         {
-            InitializeComponent();      
+            InitializeComponent();
 
         }
-        
+
         private void Button_Click(object sender, RoutedEventArgs e)
         {
             OpenFileDialog ofd = new OpenFileDialog()
@@ -45,7 +46,7 @@ namespace FileStorageEncryption
                 foreach (string fileName in ofd.FileNames)
                 {
                     names += $"{fileName}, ";
-                }                
+                }
                 openFileTextBox.Text = names;
             }
         }
@@ -53,7 +54,7 @@ namespace FileStorageEncryption
         private void EncryptButton_Click(object sender, RoutedEventArgs e)
         {
             string fileFormatted = "";
-            for(int i=0;i<files.Length;i++)
+            for (int i = 0; i < files.Length; i++)
             {
                 string file = files[i];
                 if (i >= files.Length - 1)
@@ -64,16 +65,24 @@ namespace FileStorageEncryption
                     fileFormatted += file + ",";
             }
             Console.WriteLine("Formated file = " + fileFormatted);
-            FileEncryptionAndDecryption.Encrypt(fileFormatted, "outputFile.kil",passwordTextBox.Text);
-            
+            FileEncryptionAndDecryption.Encrypt(fileFormatted, outputFolderPath+"/Encrypted101.kil", passwordTextBox.Text);
+
         }
 
         private void DecryptButton_Click(object sender, RoutedEventArgs e)
         {
-            //Only one file is needed
-            FileEncryptionAndDecryption.Decrypt(files[0],passwordTextBox.Text);
-        }        
-        
-    }
+            //Only one file is needed            
+            FileEncryptionAndDecryption.Decrypt(files[0], outputFolderPath,passwordTextBox.Text);
+        }
+
+        private void OutFileButton_OnClick(object sender, RoutedEventArgs e)
+        {            
+            System.Windows.Forms.FolderBrowserDialog fbd = new System.Windows.Forms.FolderBrowserDialog();
+            if (fbd.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+
+                outputFolderPath = fbd.SelectedPath;
+                outputFileTextBox.Text = fbd.SelectedPath;
+        }
+    }    
 
 }

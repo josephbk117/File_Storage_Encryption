@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:FileStorageEncryption"
         mc:Ignorable="d"
-        Title="MainWindow" Height="350" Width="525">
+        Title="MainWindow" Height="350" Width="622">
     <Window.Resources>
         <SolidColorBrush x:Key="TextBox.Static.Border" Color="#FFABAdB3"/>
         <SolidColorBrush x:Key="TextBox.MouseOver.Border" Color="#FF7EB4EA"/>
@@ -46,10 +46,12 @@
     </Window.Resources>
     <Grid x:Name="MainGrid">
         <Label Content="File Encrypter &amp; Decrypter" Margin="10,0" Height="46" RenderTransformOrigin="0.5,0.5" HorizontalContentAlignment="Center" FontSize="28" VerticalAlignment="Top"/>
-        <Button x:Name="addFileButton" Content="Add Files" HorizontalAlignment="Right" Margin="0,70,10,0" VerticalAlignment="Top" Width="80" Height="30" FontSize="16" Click="Button_Click"/>
-        <TextBox x:Name="openFileTextBox" Height="30" Margin="10,70,95,0" TextWrapping="Wrap" VerticalAlignment="Top" FontSize="20" HorizontalContentAlignment="Center"/>
+        <Button x:Name="addFileButton" Content="Add Files" HorizontalAlignment="Right" Margin="0,70,10,0" VerticalAlignment="Top" Width="105" Height="30" FontSize="16" Click="Button_Click"/>
+        <TextBox x:Name="openFileTextBox" Height="30" Margin="10,70,120,0" TextWrapping="Wrap" VerticalAlignment="Top" FontSize="20" HorizontalContentAlignment="Center"/>
         <Button x:Name="encryptButton" Content="Encrypt" Margin="120,158,0,0" VerticalAlignment="Top" Height="37" FontSize="18" Click="EncryptButton_Click" HorizontalAlignment="Left" Width="110"/>
         <Button x:Name="decryptButton" Content="Decrypt" Margin="0,158,120,0" VerticalAlignment="Top" Height="37" FontSize="18" Click="DecryptButton_Click" HorizontalAlignment="Right" Width="112"/>
-        <TextBox x:Name="passwordTextBox" Height="30" Margin="10,105,95,0" TextWrapping="Wrap" VerticalAlignment="Top" FontSize="20" HorizontalContentAlignment="Center" Text="password"/>
+        <TextBox x:Name="passwordTextBox" Height="30" Margin="10,105,120,0" TextWrapping="Wrap" VerticalAlignment="Top" FontSize="20" HorizontalContentAlignment="Center" Text="password"/>
+        <TextBox x:Name="outputFileTextBox" Height="30" Margin="10,209,120,0" TextWrapping="Wrap" VerticalAlignment="Top" FontSize="20" HorizontalContentAlignment="Center"/>
+        <Button x:Name="outputFileButton" Content="Output Folder" HorizontalAlignment="Right" Margin="0,209,10,0" VerticalAlignment="Top" Width="105" Height="30" FontSize="16" Click="OutFileButton_OnClick"/>
     </Grid>
 </Window>
