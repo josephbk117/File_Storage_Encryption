@@ -26,28 +26,42 @@ namespace FileStorageEncryption
     {
 
         string[] files;
-        string outputFolderPath = "";
+        string _outputFolderPathForEncryption = "";
+        string _outputFolderPathForDecryption = "";
         public MainWindow()
         {
             InitializeComponent();
-
         }
 
-        private void Button_Click(object sender, RoutedEventArgs e)
+        private void OpenFileButton_OnClick(object sender, RoutedEventArgs e)
         {
-            OpenFileDialog ofd = new OpenFileDialog()
+            if (sender.Equals(addFileButton))
             {
-                Multiselect = true
-            };
-            if (ofd.ShowDialog() == true)
-            {
-                files = ofd.FileNames;
-                string names = "";
-                foreach (string fileName in ofd.FileNames)
+                OpenFileDialog ofd = new OpenFileDialog()
                 {
-                    names += $"{fileName}, ";
+                    Multiselect = true
+                };
+                if (ofd.ShowDialog() == true)
+                {
+                    files = ofd.FileNames;
+                    string names = "";
+                    foreach (string fileName in ofd.FileNames)
+                    {
+                        names += $"{fileName}, ";
+                    }
+                    openFileTextBox.Text = names;
                 }
-                openFileTextBox.Text = names;
+            }
+            else if (sender.Equals(addFileButton_Decrypt))
+            {
+                OpenFileDialog ofd = new OpenFileDialog()
+                {
+                    Multiselect = false
+                };
+                if (ofd.ShowDialog() == true)
+                {
+                    openFileTextBox_Decrypt.Text = ofd.FileName;
+                }
             }
         }
 
@@ -63,26 +77,34 @@ namespace FileStorageEncryption
                 }
                 else
                     fileFormatted += file + ",";
-            }
-            Console.WriteLine("Formated file = " + fileFormatted);
-            FileEncryptionAndDecryption.Encrypt(fileFormatted, outputFolderPath+"/Encrypted101.kil", passwordTextBox.Text);
-
+            }           
+            FileEncryptionAndDecryption.Encrypt(fileFormatted, _outputFolderPathForEncryption + "/Encrypted101.kil", passwordTextBox.Text);
         }
 
         private void DecryptButton_Click(object sender, RoutedEventArgs e)
         {
             //Only one file is needed            
-            FileEncryptionAndDecryption.Decrypt(files[0], outputFolderPath,passwordTextBox.Text);
+            FileEncryptionAndDecryption.Decrypt(openFileTextBox_Decrypt.Text, _outputFolderPathForDecryption, passwordTextBox_Decrypt.Text);
         }
 
         private void OutFileButton_OnClick(object sender, RoutedEventArgs e)
-        {            
+        {
             System.Windows.Forms.FolderBrowserDialog fbd = new System.Windows.Forms.FolderBrowserDialog();
-            if (fbd.ShowDialog() == System.Windows.Forms.DialogResult.OK)
 
-                outputFolderPath = fbd.SelectedPath;
-                outputFileTextBox.Text = fbd.SelectedPath;
+            if (fbd.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+            {
+                if (sender.Equals(outputFileButton))
+                {
+                    _outputFolderPathForEncryption = fbd.SelectedPath;
+                    outputFileTextBox.Text = fbd.SelectedPath;
+                }
+                else if(sender.Equals(outputFileButton_Decrypt))
+                {
+                    _outputFolderPathForDecryption = fbd.SelectedPath;
+                    outputFileTextBox_Decrypt.Text = fbd.SelectedPath;
+                }
+            }
         }
-    }    
+    }
 
 }

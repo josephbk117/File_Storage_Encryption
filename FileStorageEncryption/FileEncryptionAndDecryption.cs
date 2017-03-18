@@ -28,11 +28,6 @@ public static class FileEncryptionAndDecryption
 
         List<byte[]> allBuffers = new List<byte[]>();
 
-        //TODO : Add new meta data in front : 1st - 4 bytes ,size of file in bytes
-        //TODO : Add size of file name as 1 byte right after that
-        //TODO : Add Encrypted file data till end
-        //TODO : Set next 4 bytes to get file size of next file, 1 byte for file name size then keep adding
-
         //For Debugging
         int prevEndIndex = 0;
         foreach (string inputFile in inputFiles)
@@ -48,7 +43,7 @@ public static class FileEncryptionAndDecryption
 
             //Put in meta data of file size , first 4 bytes
             byte[] sizeBytes = BitConverter.GetBytes(fileSize);
-            Console.WriteLine("Size bytes are : "); // 0-3 filled with file size
+           
             for (int i = 0; i < sizeBytes.Length; i++)
             {
                 buffer[i] = sizeBytes[i];
@@ -71,22 +66,7 @@ public static class FileEncryptionAndDecryption
 
             br.Close();
             fs.Close();
-
-            //Test decryption
-            byte[] sizeVal = { buffer[0], buffer[1], buffer[2], buffer[3] };
-            int fileSizeT = BitConverter.ToInt32(sizeVal, 0);
-            int fileNameSizeT = (int)buffer[4];
-            string fileNameT = "";
-            for (int i = 5; i < fileNameSizeT + 5; i++)
-            {
-                fileNameT += (char)buffer[i];
-            }
-
-            Console.WriteLine(" META DATA : file size = " + fileSizeT + ",File name size = " + fileNameSizeT + ", name size from text = " + fileNameT.Length + ", File name = "
-                + fileNameT);            
-            Console.WriteLine("Started index of file = " + prevEndIndex);
-            prevEndIndex = prevEndIndex + (4 + 1 + formattedName.Length + fileSize);
-
+            
             allBuffers.Add(buffer);
         }
 

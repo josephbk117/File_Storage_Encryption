@@ -46,12 +46,27 @@
     </Window.Resources>
     <Grid x:Name="MainGrid">
         <Label Content="File Encrypter &amp; Decrypter" Margin="10,0" Height="46" RenderTransformOrigin="0.5,0.5" HorizontalContentAlignment="Center" FontSize="28" VerticalAlignment="Top"/>
-        <Button x:Name="addFileButton" Content="Add Files" HorizontalAlignment="Right" Margin="0,70,10,0" VerticalAlignment="Top" Width="105" Height="30" FontSize="16" Click="Button_Click"/>
-        <TextBox x:Name="openFileTextBox" Height="30" Margin="10,70,120,0" TextWrapping="Wrap" VerticalAlignment="Top" FontSize="20" HorizontalContentAlignment="Center"/>
-        <Button x:Name="encryptButton" Content="Encrypt" Margin="120,158,0,0" VerticalAlignment="Top" Height="37" FontSize="18" Click="EncryptButton_Click" HorizontalAlignment="Left" Width="110"/>
-        <Button x:Name="decryptButton" Content="Decrypt" Margin="0,158,120,0" VerticalAlignment="Top" Height="37" FontSize="18" Click="DecryptButton_Click" HorizontalAlignment="Right" Width="112"/>
-        <TextBox x:Name="passwordTextBox" Height="30" Margin="10,105,120,0" TextWrapping="Wrap" VerticalAlignment="Top" FontSize="20" HorizontalContentAlignment="Center" Text="password"/>
-        <TextBox x:Name="outputFileTextBox" Height="30" Margin="10,209,120,0" TextWrapping="Wrap" VerticalAlignment="Top" FontSize="20" HorizontalContentAlignment="Center"/>
-        <Button x:Name="outputFileButton" Content="Output Folder" HorizontalAlignment="Right" Margin="0,209,10,0" VerticalAlignment="Top" Width="105" Height="30" FontSize="16" Click="OutFileButton_OnClick"/>
+        <TabControl Margin="0,46,0,0">
+            <TabItem Header="Encryption">
+                <Grid Margin="0,0,0,0">
+                    <Button x:Name="addFileButton" Content="Add Files" HorizontalAlignment="Right" Margin="0,22,10,0" VerticalAlignment="Top" Width="105" Height="30" FontSize="16" Click="OpenFileButton_OnClick"/>
+                    <TextBox x:Name="openFileTextBox" Height="30" Margin="10,22,120,0" TextWrapping="Wrap" VerticalAlignment="Top" FontSize="20" HorizontalContentAlignment="Center"/>                    
+                    <Button x:Name="encryptButton" Content="Encrypt Files" Margin="226,118,226,0" VerticalAlignment="Top" Height="37" FontSize="18" Click="EncryptButton_Click" RenderTransformOrigin="0.5,0.5"/>
+                    <TextBox x:Name="passwordTextBox" Height="30" Margin="10,71,120,0" TextWrapping="Wrap" VerticalAlignment="Top" FontSize="20" HorizontalContentAlignment="Center" Text="password"/>
+                    <TextBox x:Name="outputFileTextBox" Height="30" Margin="10,178,120,0" TextWrapping="Wrap" VerticalAlignment="Top" FontSize="20" HorizontalContentAlignment="Center"/>
+                    <Button x:Name="outputFileButton" Content="Output Folder" HorizontalAlignment="Right" Margin="0,178,10,0" VerticalAlignment="Top" Width="105" Height="30" FontSize="16" Click="OutFileButton_OnClick"/>
+                </Grid>
+            </TabItem>
+            <TabItem Header="Decryption">
+                <Grid Margin="0,0,0,0">
+                    <Button x:Name="addFileButton_Decrypt" Content="Open File" HorizontalAlignment="Right" Margin="0,22,10,0" VerticalAlignment="Top" Width="105" Height="30" FontSize="16" Click="OpenFileButton_OnClick"/>
+                    <TextBox x:Name="openFileTextBox_Decrypt" Height="30" Margin="10,22,120,0" TextWrapping="Wrap" VerticalAlignment="Top" FontSize="20" HorizontalContentAlignment="Center"/>
+                    <Button x:Name="decryptButton" Content="Decrypt File" Margin="226,118,226,0" VerticalAlignment="Top" Height="37" FontSize="18" Click="DecryptButton_Click" RenderTransformOrigin="0.5,0.5"/>
+                    <TextBox x:Name="passwordTextBox_Decrypt" Height="30" Margin="10,71,120,0" TextWrapping="Wrap" VerticalAlignment="Top" FontSize="20" HorizontalContentAlignment="Center" Text="password"/>
+                    <TextBox x:Name="outputFileTextBox_Decrypt" Height="30" Margin="10,178,120,0" TextWrapping="Wrap" VerticalAlignment="Top" FontSize="20" HorizontalContentAlignment="Center"/>
+                    <Button x:Name="outputFileButton_Decrypt" Content="Output Folder" HorizontalAlignment="Right" Margin="0,178,10,0" VerticalAlignment="Top" Width="105" Height="30" FontSize="16" Click="OutFileButton_OnClick"/>
+                </Grid>
+            </TabItem>
+        </TabControl>
     </Grid>
 </Window>
