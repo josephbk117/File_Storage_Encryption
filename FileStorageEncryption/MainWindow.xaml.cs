@@ -56,8 +56,8 @@ namespace FileStorageEncryption
             {
                 OpenFileDialog ofd = new OpenFileDialog()
                 {
-                    Multiselect = false
-                };
+                    Filter = "(.KIL)|*.kil"                  
+                };                
                 if (ofd.ShowDialog() == true)
                 {
                     openFileTextBox_Decrypt.Text = ofd.FileName;
@@ -77,8 +77,8 @@ namespace FileStorageEncryption
                 }
                 else
                     fileFormatted += file + ",";
-            }           
-            FileEncryptionAndDecryption.Encrypt(fileFormatted, _outputFolderPathForEncryption + "/Encrypted101.kil", passwordTextBox.Text);
+            }
+            FileEncryptionAndDecryption.Encrypt(fileFormatted, _outputFolderPathForEncryption, passwordTextBox.Text);
         }
 
         private void DecryptButton_Click(object sender, RoutedEventArgs e)
@@ -89,16 +89,20 @@ namespace FileStorageEncryption
 
         private void OutFileButton_OnClick(object sender, RoutedEventArgs e)
         {
-            System.Windows.Forms.FolderBrowserDialog fbd = new System.Windows.Forms.FolderBrowserDialog();
-
-            if (fbd.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+            if (sender.Equals(outputFileButton))
             {
-                if (sender.Equals(outputFileButton))
+                SaveFileDialog sfd = new SaveFileDialog();
+                sfd.Filter = "(.KIL)|*.kil";
+                if (sfd.ShowDialog() == true)
                 {
-                    _outputFolderPathForEncryption = fbd.SelectedPath;
-                    outputFileTextBox.Text = fbd.SelectedPath;
+                    _outputFolderPathForEncryption = sfd.FileName;
+                    outputFileTextBox.Text = sfd.FileName;
                 }
-                else if(sender.Equals(outputFileButton_Decrypt))
+            }
+            else if (sender.Equals(outputFileButton_Decrypt))
+            {
+                System.Windows.Forms.FolderBrowserDialog fbd = new System.Windows.Forms.FolderBrowserDialog();
+                if (fbd.ShowDialog() == System.Windows.Forms.DialogResult.OK)
                 {
                     _outputFolderPathForDecryption = fbd.SelectedPath;
                     outputFileTextBox_Decrypt.Text = fbd.SelectedPath;
