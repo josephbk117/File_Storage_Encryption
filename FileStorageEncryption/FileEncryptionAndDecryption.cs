@@ -9,7 +9,7 @@ using System.Collections.Generic;
 public static class FileEncryptionAndDecryption
 {
 
-    private static BackgroundWorker bgw = new BackgroundWorker();
+    private static BackgroundWorker bgw;
 
 
     private static void Bgw_DoWork(object sender, DoWorkEventArgs e)
@@ -27,7 +27,8 @@ public static class FileEncryptionAndDecryption
         string hashedPassword = GenerateHash(password);
 
         List<byte[]> allBuffers = new List<byte[]>();
-        
+
+        int completedCount = 0;
         foreach (string inputFile in inputFiles)
         {
             FileStream fs = new FileStream(inputFile, FileMode.Open);
@@ -41,11 +42,10 @@ public static class FileEncryptionAndDecryption
 
             //Put in meta data of file size , first 4 bytes
             byte[] sizeBytes = BitConverter.GetBytes(fileSize);
-           
+
             for (int i = 0; i < sizeBytes.Length; i++)
             {
                 buffer[i] = sizeBytes[i];
-                Console.Write(" " + buffer[i]);
             }
 
             buffer[4] = (byte)formattedName.Length; //File name length
@@ -64,8 +64,11 @@ public static class FileEncryptionAndDecryption
 
             br.Close();
             fs.Close();
-            
+
             allBuffers.Add(buffer);
+            //Gives the number that has been completed
+
+            bgw.ReportProgress(++completedCount);
         }
 
         int totalSize = 0;
@@ -80,7 +83,7 @@ public static class FileEncryptionAndDecryption
             wr.Flush();
             totalSize += allBuffers[i].Length;
         }
-        Console.WriteLine("Total size = " + totalSize);
+
 
         wr.Close();
         fr.Close();
@@ -88,14 +91,14 @@ public static class FileEncryptionAndDecryption
         fr.Dispose();
     }
 
-    public static void Encrypt(string inputFiles, string outputFile, string password)
+    public static void Encrypt(string inputFiles, string outputFile, string password, BackgroundWorker _bgw)
     {
+        bgw = _bgw;
         bgw.DoWork += Bgw_DoWork;
         string[] vals = { inputFiles, outputFile, password };
         bgw.RunWorkerAsync(vals);
     }
-
-    public static void Decrypt(string inputFile, string outputFolderPath,string password)
+    public static void Decrypt(string inputFile, string outputFolderPath, string password)
     {
         string hashedPassword = GenerateHash(password);
         FileStream fs = new FileStream(inputFile, FileMode.Open);
@@ -112,26 +115,26 @@ public static class FileEncryptionAndDecryption
         {
             byte[] byteValue = { buffer[p], buffer[p + 1], buffer[p + 2], buffer[p + 3] };//-get file size 4 bytes
             int _fileSize = BitConverter.ToInt32(byteValue, 0);
-            Console.WriteLine("Decrypt File Size = " + _fileSize);
+            
             int _fileNameLength = (int)buffer[p + 4];                                     //-get file name length - 1byte
-            Console.WriteLine("Decrypt file name length  = " + _fileNameLength);
+           
             string _fileName = "";
 
-            for (int i = p+5; i < _fileNameLength+p+5; i++)
+            for (int i = p + 5; i < _fileNameLength + p + 5; i++)
             {
                 _fileName += Convert.ToChar(buffer[i]);
             }
             byte[] _data = new byte[_fileSize];
 
             int k = 0;
-            for (int i = p + _fileNameLength + 5; i < p + _fileSize+5; i++)
+            for (int i = p + _fileNameLength + 5; i < p + _fileSize + 5; i++)
             {
                 _data[k] = (byte)(buffer[i] ^ hashedPassword[k % hashedPassword.Length]);
                 _data[k] = CorrectDecryptByteValue(_data[k] - 3);
                 k++;
             }
 
-            FileStream _fr = new FileStream(outputFolderPath+"/"+_fileName, FileMode.Create);
+            FileStream _fr = new FileStream(outputFolderPath + "/" + _fileName, FileMode.Create);
             BinaryWriter _wr = new BinaryWriter(_fr);
             _wr.Write(_data);
 
@@ -139,9 +142,9 @@ public static class FileEncryptionAndDecryption
             _fr.Close();
 
             //Move to next index
-            p = p + _fileSize + _fileNameLength + 5;            
+            p = p + _fileSize + _fileNameLength + 5;
         }
-        
+
         br.Close();
         fs.Close();
     }

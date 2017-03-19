@@ -7,23 +7,15 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.ComponentModel;
 
 namespace FileStorageEncryption
 {
-    /// <summary>
-    /// Interaction logic for MainWindow.xaml
-    /// </summary>
-
     public partial class MainWindow : Window
     {
+        private static List<ProgressDisplay> progressDisplayList = new List<ProgressDisplay>();
+        private static BackgroundWorker bgw = new BackgroundWorker();
 
         string[] files;
         string _outputFolderPathForEncryption = "";
@@ -31,26 +23,23 @@ namespace FileStorageEncryption
         public MainWindow()
         {
             InitializeComponent();
-            AddToDockList("bhyb");
-            AddToDockList("poplol");
+            bgw.WorkerReportsProgress = true;
+            bgw.ProgressChanged += Bgw_ProgressChanged;                        
+        }
+        private static void Bgw_ProgressChanged(object sender, ProgressChangedEventArgs e)
+        {
+            //TODO gives number of files completed         
+            for(int i = 0;i<e.ProgressPercentage;i++)
+            {
+                progressDisplayList[i].SetProgress(100);
+            }
+            if (e.ProgressPercentage == progressDisplayList.Count)
+            {
+                MessageBox.Show("Sucessfully encrypted the files", "Encryption Done", MessageBoxButton.OK);
+            }
+            
         }
 
-        private void AddToDockList(string fileName)
-        {
-            DockPanel pan = new DockPanel();
-            DockPanel.SetDock(pan, Dock.Top);
-            Label lbl1 = new Label();
-            lbl1.Content = fileName;
-            lbl1.HorizontalAlignment = HorizontalAlignment.Left;
-            DockPanel.SetDock(lbl1, Dock.Left);
-            pan.Children.Add(lbl1);
-            Label lbl2 = new Label();
-            lbl2.Content = "OMOMOMOM";
-            lbl2.HorizontalAlignment = HorizontalAlignment.Right;
-            DockPanel.SetDock(lbl2, Dock.Right);
-            pan.Children.Add(lbl2);
-            dockList.Children.Add(pan);
-        }
 
         private void OpenFileButton_OnClick(object sender, RoutedEventArgs e)
         {
@@ -67,6 +56,7 @@ namespace FileStorageEncryption
                     foreach (string fileName in ofd.FileNames)
                     {
                         names += $"{fileName}, ";
+                        progressDisplayList.Add(new ProgressDisplay(dockList, fileName));
                     }
                     openFileTextBox.Text = names;
                 }
@@ -75,8 +65,8 @@ namespace FileStorageEncryption
             {
                 OpenFileDialog ofd = new OpenFileDialog()
                 {
-                    Filter = "(.KIL)|*.kil"                  
-                };                
+                    Filter = "(.KIL)|*.kil"
+                };
                 if (ofd.ShowDialog() == true)
                 {
                     openFileTextBox_Decrypt.Text = ofd.FileName;
@@ -85,8 +75,8 @@ namespace FileStorageEncryption
         }
 
         private void EncryptButton_Click(object sender, RoutedEventArgs e)
-        {
-            if(!ValidateEncryptButton())
+        {            
+            if (!ValidateEncryptButton())
             {
                 return;
             }
@@ -101,7 +91,7 @@ namespace FileStorageEncryption
                 else
                     fileFormatted += file + ",";
             }
-            FileEncryptionAndDecryption.Encrypt(fileFormatted, _outputFolderPathForEncryption, passwordTextBox.Text);
+            FileEncryptionAndDecryption.Encrypt(fileFormatted, _outputFolderPathForEncryption, passwordTextBox.Text,bgw);
         }
 
         private bool ValidateEncryptButton()
@@ -147,7 +137,7 @@ namespace FileStorageEncryption
         private void DecryptButton_Click(object sender, RoutedEventArgs e)
         {
             //Only one file is needed         
-            if(!ValidateDecryptButton())
+            if (!ValidateDecryptButton())
             {
                 return;
             }
