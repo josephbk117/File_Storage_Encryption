@@ -27,9 +27,7 @@ public static class FileEncryptionAndDecryption
         string hashedPassword = GenerateHash(password);
 
         List<byte[]> allBuffers = new List<byte[]>();
-
-        //For Debugging
-        int prevEndIndex = 0;
+        
         foreach (string inputFile in inputFiles)
         {
             FileStream fs = new FileStream(inputFile, FileMode.Open);

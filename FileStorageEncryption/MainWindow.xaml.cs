@@ -31,6 +31,25 @@ namespace FileStorageEncryption
         public MainWindow()
         {
             InitializeComponent();
+            AddToDockList("bhyb");
+            AddToDockList("poplol");
+        }
+
+        private void AddToDockList(string fileName)
+        {
+            DockPanel pan = new DockPanel();
+            DockPanel.SetDock(pan, Dock.Top);
+            Label lbl1 = new Label();
+            lbl1.Content = fileName;
+            lbl1.HorizontalAlignment = HorizontalAlignment.Left;
+            DockPanel.SetDock(lbl1, Dock.Left);
+            pan.Children.Add(lbl1);
+            Label lbl2 = new Label();
+            lbl2.Content = "OMOMOMOM";
+            lbl2.HorizontalAlignment = HorizontalAlignment.Right;
+            DockPanel.SetDock(lbl2, Dock.Right);
+            pan.Children.Add(lbl2);
+            dockList.Children.Add(pan);
         }
 
         private void OpenFileButton_OnClick(object sender, RoutedEventArgs e)
@@ -67,6 +86,10 @@ namespace FileStorageEncryption
 
         private void EncryptButton_Click(object sender, RoutedEventArgs e)
         {
+            if(!ValidateEncryptButton())
+            {
+                return;
+            }
             string fileFormatted = "";
             for (int i = 0; i < files.Length; i++)
             {
@@ -81,9 +104,53 @@ namespace FileStorageEncryption
             FileEncryptionAndDecryption.Encrypt(fileFormatted, _outputFolderPathForEncryption, passwordTextBox.Text);
         }
 
+        private bool ValidateEncryptButton()
+        {
+            if (string.IsNullOrWhiteSpace(openFileTextBox.Text))
+            {
+                MessageBox.Show("There are no files to encrypt", "Error", MessageBoxButton.OK);
+                return false;
+            }
+            else if (string.IsNullOrWhiteSpace(outputFileTextBox.Text))
+            {
+                MessageBox.Show("There is no output file specified", "Error", MessageBoxButton.OK);
+                return false;
+            }
+            else if (string.IsNullOrWhiteSpace(passwordTextBox.Text) || passwordTextBox.Text == "password")
+            {
+                MessageBox.Show("No valid password provided", "Error", MessageBoxButton.OK);
+                return false;
+            }
+            return true;
+        }
+        private bool ValidateDecryptButton()
+        {
+
+            if (string.IsNullOrWhiteSpace(openFileTextBox_Decrypt.Text))
+            {
+                MessageBox.Show("There are no files to decrypt", "Error", MessageBoxButton.OK);
+                return false;
+            }
+            else if (string.IsNullOrWhiteSpace(outputFileTextBox_Decrypt.Text))
+            {
+                MessageBox.Show("There is no output folder specified", "Error", MessageBoxButton.OK);
+                return false;
+            }
+            else if (string.IsNullOrWhiteSpace(passwordTextBox_Decrypt.Text) || passwordTextBox.Text == "password")
+            {
+                MessageBox.Show("No valid password provided", "Error", MessageBoxButton.OK);
+                return false;
+            }
+            return true;
+        }
+
         private void DecryptButton_Click(object sender, RoutedEventArgs e)
         {
-            //Only one file is needed            
+            //Only one file is needed         
+            if(!ValidateDecryptButton())
+            {
+                return;
+            }
             FileEncryptionAndDecryption.Decrypt(openFileTextBox_Decrypt.Text, _outputFolderPathForDecryption, passwordTextBox_Decrypt.Text);
         }
 
