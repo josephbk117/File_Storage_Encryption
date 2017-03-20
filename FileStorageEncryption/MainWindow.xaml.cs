@@ -119,7 +119,7 @@ namespace FileStorageEncryption
                 {
                     openFileTextBox_Decrypt.Text = ofd.FileName;
                 }
-            }
+            }            
         }
 
         private void EncryptButton_Click(object sender, RoutedEventArgs e)
@@ -174,7 +174,7 @@ namespace FileStorageEncryption
                 MessageBox.Show("There is no output folder specified", "Error", MessageBoxButton.OK);
                 return false;
             }
-            else if (string.IsNullOrWhiteSpace(passwordTextBox_Decrypt.Text) || passwordTextBox.Text == "password")
+            else if (string.IsNullOrWhiteSpace(passwordTextBox_Decrypt.Text) || passwordTextBox_Decrypt.Text == "password")
             {
                 MessageBox.Show("No valid password provided", "Error", MessageBoxButton.OK);
                 return false;
