@@ -57,6 +57,14 @@ namespace FileStorageEncryption
             InitializeComponent();
             bgw.WorkerReportsProgress = true;
             bgw.ProgressChanged += Bgw_ProgressChanged;
+            bgw.RunWorkerCompleted += Bgw_RunWorkerCompleted;
+        }
+
+        private void Bgw_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
+        {
+            MessageBox.Show("Sucessfully encrypted the files", "Encryption Done", MessageBoxButton.OK, MessageBoxImage.Information);
+            dockList.Children.Clear();
+            progressDisplayList.Clear();
         }
 
         protected override void OnInitialized(EventArgs e)
@@ -80,12 +88,7 @@ namespace FileStorageEncryption
             for (int i = 0; i < e.ProgressPercentage; i++)
             {
                 progressDisplayList[i].SetProgress(100);
-            }
-            if (e.ProgressPercentage == progressDisplayList.Count)
-            {
-                MessageBox.Show("Sucessfully encrypted the files", "Encryption Done", MessageBoxButton.OK);
-            }
-
+            }           
         }
 
 
@@ -174,7 +177,7 @@ namespace FileStorageEncryption
                 MessageBox.Show("There is no output folder specified", "Error", MessageBoxButton.OK);
                 return false;
             }
-            else if (string.IsNullOrWhiteSpace(passwordTextBox_Decrypt.Text) || passwordTextBox.Text == "password")
+            else if (string.IsNullOrWhiteSpace(passwordTextBox_Decrypt.Text) || passwordTextBox_Decrypt.Text == "password")
             {
                 MessageBox.Show("No valid password provided", "Error", MessageBoxButton.OK);
                 return false;
