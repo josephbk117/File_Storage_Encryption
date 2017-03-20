@@ -1,35 +1,83 @@
 ﻿using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Shapes;
 using System.ComponentModel;
+using System.Runtime.InteropServices;
 
 namespace FileStorageEncryption
 {
     public partial class MainWindow : Window
     {
+        [DllImport("Shell32.dll", CharSet = CharSet.Auto, SetLastError = true)]
+        public static extern void SHChangeNotify(uint wEventId, uint uFlags, IntPtr dwItem1, IntPtr dwItem2);
+
         private static List<ProgressDisplay> progressDisplayList = new List<ProgressDisplay>();
         private static BackgroundWorker bgw = new BackgroundWorker();
 
         string[] files;
         string _outputFolderPathForEncryption = "";
         string _outputFolderPathForDecryption = "";
+
+        string args = "";
+
+        public static bool IsAssociated()
+        {
+            return (Registry.CurrentUser.OpenSubKey("Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\FileExts\\.kil", false) == null);
+        }
+        public static void Associate()
+        {
+            RegistryKey fileReg = Registry.CurrentUser.CreateSubKey("Software\\Classes\\.kil");
+            RegistryKey appReg = Registry.CurrentUser.CreateSubKey("Software\\Classes\\Applications\\FileStorageEncryption.exe");
+            RegistryKey appAssoc = Registry.CurrentUser.CreateSubKey("Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\FileExts\\.kil");
+            fileReg.CreateSubKey("DefaultIcon").SetValue("", "C:\\Users\\josep_000\\Pictures\\encryptProj.ico");
+            fileReg.CreateSubKey("PerceivedType").SetValue("", "Text");
+
+            Console.WriteLine("App location = " + Environment.GetCommandLineArgs()[0]);
+
+            appReg.CreateSubKey("shell\\open\\command").SetValue("", "\"" + Environment.GetCommandLineArgs()[0] + "\" %1");
+            appReg.CreateSubKey("shell\\edit\\command").SetValue("", "\"" + Environment.GetCommandLineArgs()[0] + "\" %1");
+            appReg.CreateSubKey("DefaultIcon").SetValue("", "C:\\Users\\josep_000\\Pictures\\encryptProj.ico");
+
+            appAssoc.CreateSubKey("UserChoice").SetValue("Progid", "Applications\\FileStorageEncryption.exe");
+            SHChangeNotify(0x08000000, 0x0000, IntPtr.Zero, IntPtr.Zero);
+        }
+
         public MainWindow()
         {
+
+            if (IsAssociated())
+            {
+                Associate();
+            }
+            else
+            {
+                Console.WriteLine("Has been associated");
+            }
             InitializeComponent();
             bgw.WorkerReportsProgress = true;
-            bgw.ProgressChanged += Bgw_ProgressChanged;                        
+            bgw.ProgressChanged += Bgw_ProgressChanged;
         }
+
+        protected override void OnInitialized(EventArgs e)
+        {
+            base.OnInitialized(e);
+            String[] args = Environment.GetCommandLineArgs();
+            int argCount = args.Length;
+            
+            if(argCount > 1)
+            {
+                openFileTextBox_Decrypt.Text = args[1];
+                tabControl.SelectedIndex = 1;
+            }
+
+        }
+
+
         private static void Bgw_ProgressChanged(object sender, ProgressChangedEventArgs e)
         {
             //TODO gives number of files completed         
-            for(int i = 0;i<e.ProgressPercentage;i++)
+            for (int i = 0; i < e.ProgressPercentage; i++)
             {
                 progressDisplayList[i].SetProgress(100);
             }
@@ -37,7 +85,7 @@ namespace FileStorageEncryption
             {
                 MessageBox.Show("Sucessfully encrypted the files", "Encryption Done", MessageBoxButton.OK);
             }
-            
+
         }
 
 
@@ -75,7 +123,7 @@ namespace FileStorageEncryption
         }
 
         private void EncryptButton_Click(object sender, RoutedEventArgs e)
-        {            
+        {
             if (!ValidateEncryptButton())
             {
                 return;
@@ -91,7 +139,7 @@ namespace FileStorageEncryption
                 else
                     fileFormatted += file + ",";
             }
-            FileEncryptionAndDecryption.Encrypt(fileFormatted, _outputFolderPathForEncryption, passwordTextBox.Text,bgw);
+            FileEncryptionAndDecryption.Encrypt(fileFormatted, _outputFolderPathForEncryption, passwordTextBox.Text, bgw);
         }
 
         private bool ValidateEncryptButton()

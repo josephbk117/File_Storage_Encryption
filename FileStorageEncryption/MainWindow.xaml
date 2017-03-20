@@ -8,7 +8,7 @@
         Title="File Encrypter &amp; Decrypter" Height="461.925" Width="606" ResizeMode="CanResizeWithGrip" WindowStartupLocation="CenterScreen" MinWidth="300" MinHeight="230" Background="#FF3C3C3C" Foreground="{x:Null}">
     <Grid x:Name="MainGrid">
         <Label Content="File Encrypter &amp; Decrypter" Margin="10,0" Height="46" RenderTransformOrigin="0.5,0.5" HorizontalContentAlignment="Center" FontSize="28" VerticalAlignment="Top" Foreground="White"/>
-        <TabControl Margin="0,46,0,0" Background="#FF4B4B4B" BorderBrush="White">
+        <TabControl Name="tabControl" Margin="0,46,0,0" Background="#FF4B4B4B" BorderBrush="White">
             <TabItem Header="Encryption" Background="#FF646464" Margin="-4,-4,-4,0" BorderBrush="White" Foreground="#FFB4B4B4" MinWidth="76" MinHeight="30" FontFamily="Tahoma" FontSize="14">
                 <Grid Margin="0,0,0,0">
                     <Button x:Name="addFileButton" Content="Add Files" HorizontalAlignment="Right" Margin="0,22,10,0" VerticalAlignment="Top" Width="105" Height="30" FontSize="16" Click="OpenFileButton_OnClick" Background="#FF3C3C3C" Foreground="White"/>

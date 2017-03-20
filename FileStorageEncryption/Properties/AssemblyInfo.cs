@@ -10,7 +10,7 @@ using System.Windows;
 [assembly: AssemblyTitle("FileStorageEncryption")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
+[assembly: AssemblyCompany("Bit Shift Productions")]
 [assembly: AssemblyProduct("FileStorageEncryption")]
 [assembly: AssemblyCopyright("Copyright ©  2017")]
 [assembly: AssemblyTrademark("")]
