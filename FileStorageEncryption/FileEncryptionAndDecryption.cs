@@ -12,18 +12,15 @@ public static class FileEncryptionAndDecryption
     private static BackgroundWorker bgw;
 
 
-    private static void Bgw_DoWork(object sender, DoWorkEventArgs e)
+    private static void Bgw_DoEncryptionWork(object sender, DoWorkEventArgs e)
     {
-        string[] vals = (string[])e.Argument;
-        string password = vals[2];
-        string[] inputFiles = vals[0].Split(',');
+        string[] argValues = (string[])e.Argument;
 
-        foreach (string file in inputFiles)
-        {
-            Console.WriteLine(" Checking File : " + file);
-        }
+        string[] inputFiles = argValues[0].Split(',');
+        string outputFile = argValues[1];
+        string password = argValues[2];
 
-        string outputFile = vals[1];
+
         string hashedPassword = GenerateHash(password);
 
         List<byte[]> allBuffers = new List<byte[]>();
@@ -84,22 +81,55 @@ public static class FileEncryptionAndDecryption
             totalSize += allBuffers[i].Length;
         }
 
-
         wr.Close();
         fr.Close();
         wr.Dispose();
         fr.Dispose();
     }
 
-    public static void Encrypt(string inputFiles, string outputFile, string password, BackgroundWorker _bgw)
+    public static bool Encrypt(string inputFiles, string outputFile, string password, BackgroundWorker _bgw)
     {
-        bgw = _bgw;
-        bgw.DoWork += Bgw_DoWork;
-        string[] vals = { inputFiles, outputFile, password };
-        bgw.RunWorkerAsync(vals);
+        if (bgw == null)
+        {
+            bgw = _bgw;
+        }
+        if (!bgw.IsBusy)
+        {
+            bgw.DoWork += Bgw_DoEncryptionWork;
+            string[] vals = { inputFiles, outputFile, password };
+            bgw.RunWorkerAsync(vals);
+            return true;
+        }
+        else
+            return false;
+
     }
-    public static void Decrypt(string inputFile, string outputFolderPath, string password)
+    public static bool Decrypt(string inputFile, string outputFolderPath, string password, BackgroundWorker _bgw)
     {
+        if (bgw == null)
+        {
+            bgw = _bgw;
+        }
+        if (!bgw.IsBusy)
+        {
+            bgw.DoWork += Bgw_DoDecryptionWork;
+            string[] vals = { inputFile, outputFolderPath, password };
+            bgw.RunWorkerAsync(vals);
+            return true;
+        }
+        else
+            return false;
+    }
+
+    private static void Bgw_DoDecryptionWork(object sender, DoWorkEventArgs e)
+    {
+        string[] argValues = (string[])e.Argument;
+
+        string inputFile = argValues[0];
+        string outputFolderPath = argValues[1];
+        string password = argValues[2];
+
+
         string hashedPassword = GenerateHash(password);
         FileStream fs = new FileStream(inputFile, FileMode.Open);
         BinaryReader br = new BinaryReader(fs);
@@ -115,9 +145,9 @@ public static class FileEncryptionAndDecryption
         {
             byte[] byteValue = { buffer[p], buffer[p + 1], buffer[p + 2], buffer[p + 3] };//-get file size 4 bytes
             int _fileSize = BitConverter.ToInt32(byteValue, 0);
-            
+
             int _fileNameLength = (int)buffer[p + 4];                                     //-get file name length - 1byte
-           
+
             string _fileName = "";
 
             for (int i = p + 5; i < _fileNameLength + p + 5; i++)
@@ -148,6 +178,7 @@ public static class FileEncryptionAndDecryption
         br.Close();
         fs.Close();
     }
+
     private static byte CorrectEncryptByteValue(int value)
     {
         if (value > 255)

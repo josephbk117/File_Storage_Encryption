@@ -19,8 +19,6 @@ namespace FileStorageEncryption
         string _outputFolderPathForEncryption = "";
         string _outputFolderPathForDecryption = "";
 
-        string args = "";
-
         public static bool IsAssociated()
         {
             return (Registry.CurrentUser.OpenSubKey("Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\FileExts\\.kil", false) == null);
@@ -72,8 +70,8 @@ namespace FileStorageEncryption
             base.OnInitialized(e);
             String[] args = Environment.GetCommandLineArgs();
             int argCount = args.Length;
-            
-            if(argCount > 1)
+
+            if (argCount > 1)
             {
                 openFileTextBox_Decrypt.Text = args[1];
                 tabControl.SelectedIndex = 1;
@@ -88,7 +86,7 @@ namespace FileStorageEncryption
             for (int i = 0; i < e.ProgressPercentage; i++)
             {
                 progressDisplayList[i].SetProgress(100);
-            }           
+            }
         }
 
 
@@ -122,7 +120,7 @@ namespace FileStorageEncryption
                 {
                     openFileTextBox_Decrypt.Text = ofd.FileName;
                 }
-            }            
+            }
         }
 
         private void EncryptButton_Click(object sender, RoutedEventArgs e)
@@ -192,7 +190,7 @@ namespace FileStorageEncryption
             {
                 return;
             }
-            FileEncryptionAndDecryption.Decrypt(openFileTextBox_Decrypt.Text, _outputFolderPathForDecryption, passwordTextBox_Decrypt.Text);
+            FileEncryptionAndDecryption.Decrypt(openFileTextBox_Decrypt.Text, _outputFolderPathForDecryption, passwordTextBox_Decrypt.Text, bgw);
         }
 
         private void OutFileButton_OnClick(object sender, RoutedEventArgs e)
