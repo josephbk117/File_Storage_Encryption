@@ -20,12 +20,11 @@ public static class FileEncryptionAndDecryption
         string outputFile = argValues[1];
         string password = argValues[2];
 
-
         string hashedPassword = GenerateHash(password);
 
         List<byte[]> allBuffers = new List<byte[]>();
 
-        int completedCount = 0;
+        int completedValue = 0;
         foreach (string inputFile in inputFiles)
         {
             FileStream fs = new FileStream(inputFile, FileMode.Open);
@@ -45,6 +44,7 @@ public static class FileEncryptionAndDecryption
                 buffer[i] = sizeBytes[i];
             }
 
+
             buffer[4] = (byte)formattedName.Length; //File name length
 
             for (int i = 5; i < formattedName.Length + 5; i++)
@@ -59,13 +59,13 @@ public static class FileEncryptionAndDecryption
                 buffer[i] = (byte)(buffer[i] ^ hashedPassword[offset % hashedPassword.Length]);
             }
 
+
             br.Close();
             fs.Close();
 
-            allBuffers.Add(buffer);
-            //Gives the number that has been completed
+            allBuffers.Add(buffer);            
+            bgw.ReportProgress(++completedValue);
 
-            bgw.ReportProgress(++completedCount);
         }
 
         int totalSize = 0;
@@ -78,7 +78,7 @@ public static class FileEncryptionAndDecryption
         {
             wr.Write(allBuffers[i]);
             wr.Flush();
-            totalSize += allBuffers[i].Length;
+            totalSize += allBuffers[i].Length;            
         }
 
         wr.Close();
@@ -140,13 +140,35 @@ public static class FileEncryptionAndDecryption
         List<int> partitionIndexes = new List<int>();
 
         int p = 0;
-        Console.WriteLine("Buffer length = " + buffer.Length);
+        //TODO: Do prepass get all files and pass them as report progress with user state
+
+        List<string> fileNameList = new List<string>();
+        while (p <buffer.Length)
+        {
+            byte[] byteValue = { buffer[p], buffer[p + 1], buffer[p + 2], buffer[p + 3] };//-get file size 4 bytes
+            int _fileSize = BitConverter.ToInt32(byteValue, 0);
+
+            int _fileNameLength = buffer[p + 4];                                     //-get file name length - 1byte
+
+            string _fileName = "";
+
+            for (int i = p + 5; i < _fileNameLength + p + 5; i++)
+            {
+                _fileName += Convert.ToChar(buffer[i]);
+            }
+            fileNameList.Add(_fileName);
+            p = p + _fileSize + _fileNameLength + 5;
+        }
+        //Send to main
+        //bgw.ReportProgress(-1, fileNameList);
+
+        p = 0;
         while (p < buffer.Length)
         {
             byte[] byteValue = { buffer[p], buffer[p + 1], buffer[p + 2], buffer[p + 3] };//-get file size 4 bytes
             int _fileSize = BitConverter.ToInt32(byteValue, 0);
 
-            int _fileNameLength = (int)buffer[p + 4];                                     //-get file name length - 1byte
+            int _fileNameLength = buffer[p + 4];                                     //-get file name length - 1byte
 
             string _fileName = "";
 
@@ -176,7 +198,7 @@ public static class FileEncryptionAndDecryption
         }
 
         br.Close();
-        fs.Close();
+        fs.Close();       
     }
 
     private static byte CorrectEncryptByteValue(int value)

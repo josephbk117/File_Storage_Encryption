@@ -7,13 +7,15 @@ using System.Runtime.InteropServices;
 
 namespace FileStorageEncryption
 {
+    //TODO:Use seperate bg workers for enc and decr and set up diff bg work completed and progress changed
     public partial class MainWindow : Window
     {
         [DllImport("Shell32.dll", CharSet = CharSet.Auto, SetLastError = true)]
         public static extern void SHChangeNotify(uint wEventId, uint uFlags, IntPtr dwItem1, IntPtr dwItem2);
 
         private static List<ProgressDisplay> progressDisplayList = new List<ProgressDisplay>();
-        private static BackgroundWorker bgw = new BackgroundWorker();
+        private static BackgroundWorker bgw_encryption = new BackgroundWorker();
+        private static BackgroundWorker bgw_decryption = new BackgroundWorker();
 
         string[] files;
         string _outputFolderPathForEncryption = "";
@@ -43,7 +45,6 @@ namespace FileStorageEncryption
 
         public MainWindow()
         {
-
             if (IsAssociated())
             {
                 Associate();
@@ -53,14 +54,26 @@ namespace FileStorageEncryption
                 Console.WriteLine("Has been associated");
             }
             InitializeComponent();
-            bgw.WorkerReportsProgress = true;
-            bgw.ProgressChanged += Bgw_ProgressChanged;
-            bgw.RunWorkerCompleted += Bgw_RunWorkerCompleted;
+            bgw_encryption.WorkerReportsProgress = true;
+            bgw_encryption.ProgressChanged += Bgw_EncryptionProgressChanged;
+            bgw_encryption.RunWorkerCompleted += BgwEncryptionWorkDone;
+            bgw_decryption.RunWorkerCompleted += BgwDecryptionWorkDone;
         }
 
-        private void Bgw_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
+        private void BgwDecryptionWorkDone(object sender, RunWorkerCompletedEventArgs e)
+        {
+            //TODO : Delete file
+            MessageBox.Show("Sucessfully decrypted the file", "Decryption Done", MessageBoxButton.OK, MessageBoxImage.Information);
+            if(!keepFileCheckBox.IsChecked.Value)
+            {
+                System.IO.File.Delete(openFileTextBox_Decrypt.Text);
+            }
+        }
+
+        private void BgwEncryptionWorkDone(object sender, RunWorkerCompletedEventArgs e)
         {
             MessageBox.Show("Sucessfully encrypted the files", "Encryption Done", MessageBoxButton.OK, MessageBoxImage.Information);
+
             dockList.Children.Clear();
             progressDisplayList.Clear();
         }
@@ -80,9 +93,10 @@ namespace FileStorageEncryption
         }
 
 
-        private static void Bgw_ProgressChanged(object sender, ProgressChangedEventArgs e)
+        private static void Bgw_EncryptionProgressChanged(object sender, ProgressChangedEventArgs e)
         {
-            //TODO gives number of files completed         
+            //TODO gives number of files completed     
+
             for (int i = 0; i < e.ProgressPercentage; i++)
             {
                 progressDisplayList[i].SetProgress(100);
@@ -140,7 +154,10 @@ namespace FileStorageEncryption
                 else
                     fileFormatted += file + ",";
             }
-            FileEncryptionAndDecryption.Encrypt(fileFormatted, _outputFolderPathForEncryption, passwordTextBox.Text, bgw);
+            if (!FileEncryptionAndDecryption.Encrypt(fileFormatted, _outputFolderPathForEncryption, passwordTextBox.Text, bgw_encryption))
+            {
+                MessageBox.Show("Currenlty Decrypting , Wait Till Process Is Finished", "Task Running", MessageBoxButton.OK, MessageBoxImage.Stop);
+            }
         }
 
         private bool ValidateEncryptButton()
@@ -190,7 +207,10 @@ namespace FileStorageEncryption
             {
                 return;
             }
-            FileEncryptionAndDecryption.Decrypt(openFileTextBox_Decrypt.Text, _outputFolderPathForDecryption, passwordTextBox_Decrypt.Text, bgw);
+            if (!FileEncryptionAndDecryption.Decrypt(openFileTextBox_Decrypt.Text, _outputFolderPathForDecryption, passwordTextBox_Decrypt.Text, bgw_decryption))
+            {
+                MessageBox.Show("Currenlty Encrypting , Wait Till Process Is Finished", "Task Running", MessageBoxButton.OK, MessageBoxImage.Stop);
+            }
         }
 
         private void OutFileButton_OnClick(object sender, RoutedEventArgs e)

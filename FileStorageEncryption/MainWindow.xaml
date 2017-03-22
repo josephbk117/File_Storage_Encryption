@@ -8,7 +8,7 @@
         Title="File Encrypter &amp; Decrypter" Height="461.925" Width="606" ResizeMode="CanResizeWithGrip" WindowStartupLocation="CenterScreen" MinWidth="300" MinHeight="230" Background="#FF3C3C3C" Foreground="{x:Null}">
     <Grid x:Name="MainGrid">
         <Label Content="File Encrypter &amp; Decrypter" Margin="10,0" Height="46" RenderTransformOrigin="0.5,0.5" HorizontalContentAlignment="Center" FontSize="28" VerticalAlignment="Top" Foreground="White"/>
-        <TabControl Name="tabControl" Margin="0,46,0,0" Background="#FF4B4B4B" BorderBrush="White">
+        <TabControl Name="tabControl" Margin="0,46,0,0" Background="#FF4B4B4B" BorderBrush="White" RenderTransformOrigin="0.5,0.5">
             <TabItem Header="Encryption" Background="#FF646464" Margin="-4,-4,-4,0" BorderBrush="White" Foreground="#FFB4B4B4" MinWidth="76" MinHeight="30" FontFamily="Tahoma" FontSize="14">
                 <Grid Margin="0,0,0,0">
                     <Button x:Name="addFileButton" Content="Add Files" HorizontalAlignment="Right" Margin="0,22,10,0" VerticalAlignment="Top" Width="105" Height="30" FontSize="16" Click="OpenFileButton_OnClick" Background="#FF3C3C3C" Foreground="White"/>
@@ -18,7 +18,7 @@
                     <TextBox x:Name="outputFileTextBox" Height="30" Margin="10,57,120,0" TextWrapping="Wrap" VerticalAlignment="Top" FontSize="16" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Background="#FF646464" Foreground="White"/>
                     <Button x:Name="outputFileButton" Content="Output File" HorizontalAlignment="Right" Margin="0,57,10,0" VerticalAlignment="Top" Width="105" Height="30" FontSize="16" Click="OutFileButton_OnClick" Background="#FF3C3C3C" Foreground="White"/>
                     <DockPanel x:Name="dockList" LastChildFill="False" Margin="10,194,10,10" Background="White">
-                        
+
                     </DockPanel>
 
                 </Grid>
@@ -31,8 +31,10 @@
                     <TextBox x:Name="passwordTextBox_Decrypt" Height="30" Margin="10,92,120,0" TextWrapping="Wrap" VerticalAlignment="Top" FontSize="16" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Text="password" Background="#FF646464" Foreground="White"/>
                     <TextBox x:Name="outputFileTextBox_Decrypt" Height="30" Margin="10,57,120,0" TextWrapping="Wrap" VerticalAlignment="Top" FontSize="16" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Background="#FF646464" Foreground="White"/>
                     <Button x:Name="outputFileButton_Decrypt" Content="Output Folder" HorizontalAlignment="Right" Margin="0,57,10,0" VerticalAlignment="Top" Width="105" Height="30" FontSize="16" Click="OutFileButton_OnClick" Background="#FF3C3C3C" Foreground="White"/>
+                    <CheckBox x:Name="keepFileCheckBox" Content="Keep Encrypted File" Margin="220,127,220,0" HorizontalContentAlignment="Center" Foreground="White" Height="20" VerticalContentAlignment="Center" VerticalAlignment="Top" HorizontalAlignment="Center"/>
                 </Grid>
             </TabItem>
+
         </TabControl>
     </Grid>
 </Window>
